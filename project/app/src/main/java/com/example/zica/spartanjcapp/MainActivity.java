@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView Info;
     private Button Login;
     private int counter = 5;
+    private  TextView userRegistration;
 
 
     @Override
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         Password = (EditText) findViewById(R.id.etPassword);
         Info = (TextView) findViewById(R.id.tvInfo);
         Login = (Button) findViewById(R.id.btnLogin);
+        userRegistration = (TextView) findViewById((R.id.tvRegister));
 
         Info.setText("Number of aattemts remaining: 5");
 
@@ -33,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 validate(Name.getText().toString(), Password.getText().toString());
+            }
+        });
+
+        userRegistration.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, RegistrationActivity.class));
             }
         });
 
