@@ -17,6 +17,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * This class is used to start the main functionality of the
+ * app which is the login.
+ *
+ * @author Saoud
+ */
 public class MainActivity extends AppCompatActivity {
 
     private EditText Name;
@@ -29,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private TextView forgotPassword;
 
-
+    // Starts at the very beginning of app creation.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
+        // if user is already logged in, send them to the second activity
         if(user != null){
             finish();
             startActivity(new Intent(MainActivity.this, SecondActivity.class));
         }
 
+        //
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // activates the user registration activity to register a new user
         userRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // activates the forgot password activity to change your password
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +86,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Validates that the user has logged and provides a progress dialog while waiting.
+     *
+     * @param userName the username of the user.
+     * @param userPassword the password of the user.
+     */
     private void validate(String userName, String userPassword){
 
         progressDialog.setMessage(":) w8 for it");

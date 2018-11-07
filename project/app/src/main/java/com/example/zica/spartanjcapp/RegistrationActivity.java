@@ -16,6 +16,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * This class handles all the functionalities of the registration page
+ *
+ * @author Saoud
+ */
 public class RegistrationActivity extends AppCompatActivity {
 
     private EditText userName, userPassword, userEmail;
@@ -24,18 +29,24 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
 
+    /**
+     * On creation of the activity it handles all the events on the registration page.
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        setupUIViews();
+        setupUIViews(); // Sets up the UI views.
 
         firebaseAuth = FirebaseAuth.getInstance();
 
+        // Run this when the registration button is clicked
         regButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(validate()){
+                    @Override
+                    public void onClick(View view) {
+                        if(validate()){
                     //update data to the data base
                     String user_email = userEmail.getText().toString().trim();
                     String user_password = userPassword.getText().toString().trim();
@@ -60,6 +71,10 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Sets up the ui views for the instance variables
+     */
     private void setupUIViews(){
         userName = (EditText)findViewById(R.id.etUserName);
         userPassword = (EditText)findViewById(R.id.etUsePassword);
@@ -69,6 +84,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Function which validates that the user entered appropriate values for the name, password, and email.
+     * (currently only tests if they have been inputted)
+     *
+     * @return a boolean value if it has passed or not.
+     */
     private Boolean validate(){
         Boolean result = false;
         String name = userName.getText().toString();
@@ -84,6 +105,9 @@ public class RegistrationActivity extends AppCompatActivity {
         return result;
     }
 
+    /**
+     * Sends an email verification to the user on successful registration of the application.
+     */
     private void sendEmailVerification(){
         final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         if(firebaseUser != null){
