@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "354621763467-0stqcefu8cvq0mmj1747fclsd7r0sonv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zica.spartanjcapp",
+            "certificate_hash": "bd107d1c61fc12410a47c043d3ab1c41347469ed"
+          }
+        },
+        {
           "client_id": "354621763467-5o16aqbdgk0ncldo6tbsfv4oklq8aqdg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354621763467-5o16aqbdgk0ncldo6tbsfv4oklq8aqdg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
