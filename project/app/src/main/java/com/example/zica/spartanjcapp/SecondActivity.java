@@ -33,7 +33,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void Logout(){
-        firebaseAuth.signOut();
+        firebaseAuth.signOut();// after signing out the user null// which means he will be directed to minactivity
         finish();
         startActivity(new Intent(SecondActivity.this, MainActivity.class));
     }
@@ -50,7 +50,11 @@ public class SecondActivity extends AppCompatActivity {
         switch(item.getItemId()){
             case R.id.btnLogoutMenu:{
                 Logout();
+                break;
             }
+            case R.id.profileMenu: //:
+            startActivity(new Intent(SecondActivity.this, ProfileActivity.class));
+            break;
         }
         return super.onOptionsItemSelected(item);
     }
