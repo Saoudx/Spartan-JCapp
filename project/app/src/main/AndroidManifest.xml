@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.zica.spartanjcapp">
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
 
     <application
         android:allowBackup="true"
@@ -22,7 +25,8 @@
         <activity android:name=".PasswordActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".UpdateProfile" />
-        <activity android:name=".UpdatePassword"></activity>
+        <activity android:name=".UpdatePassword" />
+        <activity android:name=".ScanActivity"></activity>
     </application>
 
 </manifest>
