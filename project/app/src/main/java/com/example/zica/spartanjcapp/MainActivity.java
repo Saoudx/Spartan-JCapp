@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         //
         Login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                @Override
+                public void onClick(View view) {
                 validate(Name.getText().toString(), Password.getText().toString());
             }
         });
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
            public void onComplete(@NonNull Task<AuthResult> task){
                if(task.isSuccessful()){
                    progressDialog.dismiss();
-                   //Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                   //ToastmakeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();.
 
                    checkEmailVerification();
 

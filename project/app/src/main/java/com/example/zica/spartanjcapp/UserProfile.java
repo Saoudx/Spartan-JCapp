@@ -4,11 +4,13 @@ public class UserProfile {
     public String userAge;
     public String userEmail;
     public String userName;
+    public String userPhone;
 
-    public UserProfile(String userAge,String userEmail,String userName ){
+    public UserProfile(String userAge,String userEmail,String userName, String userPhone ){
         this.userAge = userAge;
         this.userEmail = userEmail;
         this.userName = userName;
+        this.userPhone = userPhone;
     }
 
     public UserProfile(){
@@ -34,5 +36,12 @@ public class UserProfile {
     }
     public void setUserName(String userName){
         this.userName = userName;
+    }
+
+    public String getUserPhone(){
+        return userPhone;
+    }
+    public void setUserPhone(String userPhone){
+        this.userPhone = userPhone;
     }
 }

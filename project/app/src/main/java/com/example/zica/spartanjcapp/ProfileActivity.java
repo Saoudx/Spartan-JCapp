@@ -25,8 +25,8 @@ import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private ImageView profilepic;
-    private TextView  profilename, profileage, profileEmail;
+    private ImageView profilePic;
+    private TextView  profileName, profileAge, profileEmail, profilePhone;
     private Button profileUpdate, changePassword;
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
@@ -38,10 +38,11 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        profilepic = (ImageView)findViewById(R.id.ivProfilePic);
+        profilePic = (ImageView)findViewById(R.id.ivProfilePic);
         profileUpdate = (Button)findViewById(R.id.btnProfileUpdate);
-        profilename = (TextView)findViewById(R.id.tvProfileName);
-        profileage = (TextView)findViewById(R.id.tvProfileAge);
+        profileName = (TextView)findViewById(R.id.tvProfileName);
+        profileAge = (TextView)findViewById(R.id.tvProfileAge);
+        profilePhone = (TextView)findViewById(R.id.tvProfilePhone);
         profileEmail = findViewById(R.id.tvProfileEmail);
         changePassword = findViewById(R.id.btnChangePassword);
 
@@ -57,7 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
         storageReference.child(firebaseAuth.getUid()).child("Images/Profile Pic").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Picasso.get().load(uri).fit().centerCrop().into(profilepic);//download the data and put it into profilepic
+                Picasso.get().load(uri).fit().centerCrop().into(profilePic);//download the data and put it into profilePic
             }
         });
 
@@ -65,9 +66,10 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                profilename.setText("Name: " + userProfile.getUserName());
-                profileage.setText("Age: " + userProfile.getUserAge());
-                profileEmail.setText("Email@: " + userProfile.getUserEmail());
+                profileName.setText("Name: " + userProfile.getUserName());
+                profileAge.setText("Age: " + userProfile.getUserAge());
+                profileEmail.setText("Email: " + userProfile.getUserEmail());
+                profilePhone.setText("Phone: " + userProfile.getUserPhone());
 
             }
 

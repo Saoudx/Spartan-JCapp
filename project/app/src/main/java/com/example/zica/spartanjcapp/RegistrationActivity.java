@@ -1,19 +1,31 @@
 package com.example.zica.spartanjcapp;
 
+
 import android.content.Intent;
+
 import android.graphics.Bitmap;
+
 import android.net.Uri;
+
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
+
+
+import java.io.IOException;
+
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,7 +40,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 
 /**
  * This class handles all the functionalities of the registration page
@@ -37,24 +48,24 @@ import java.io.IOException;
  */
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText userName, userPassword, userEmail, userAge;
+    private EditText userName, userPassword, userEmail, userAge, userPhone;
     private Button regButton;
     private TextView userLogin;
     private FirebaseAuth firebaseAuth;
     private ImageView userProfilePic;
-    String email, name, age, password;
+    String email, name, age, password, phoneNumber;
     private FirebaseStorage firebaseStorage;
     private static int PICK_IMAGE = 123;
-    Uri imagePath;
+    Uri profileImagePath;
     private StorageReference storageReference;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK && data.getData() != null){
-            imagePath = data.getData();
+            profileImagePath = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagePath);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), profileImagePath);
                 userProfilePic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -77,7 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseStorage = FirebaseStorage.getInstance();
 
-         storageReference = firebaseStorage.getReference();
+        storageReference = firebaseStorage.getReference();
         userProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,9 +117,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 //sendEmailVerification();
                                 sendUserData();
-
                                 firebaseAuth.signOut();
-
                                 Toast.makeText(RegistrationActivity.this, "Successfully Registered, Upload complete!", Toast.LENGTH_SHORT).show();
                                 finish();
                                 startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
@@ -135,6 +144,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userName = (EditText)findViewById(R.id.etUserName);
         userPassword = (EditText)findViewById(R.id.etUsePassword);
         userEmail = (EditText)findViewById(R.id.etUserEmail);
+        userPhone = (EditText)findViewById(R.id.etUserPhone);
         regButton = (Button)findViewById(R.id.btnRegister);
         userLogin = (TextView) findViewById(R.id.tvUserLogin);
         userAge = (EditText)findViewById(R.id.etAge);
@@ -155,8 +165,9 @@ public class RegistrationActivity extends AppCompatActivity {
          password = userPassword.getText().toString();
          email = userEmail.getText().toString();
          age = userAge.getText().toString();
+         phoneNumber = userPhone.getText().toString();
 
-        if(name.isEmpty() || password.isEmpty() || email.isEmpty() || age.isEmpty() || imagePath == null){
+        if(name.isEmpty() || password.isEmpty() || email.isEmpty() || age.isEmpty() || profileImagePath == null || phoneNumber.isEmpty()){
             Toast.makeText(this, "Pleas enter all the details ", Toast.LENGTH_SHORT).show();
 
         }else{
@@ -181,7 +192,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         finish();
                         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
                     }else{
-                        Toast.makeText(RegistrationActivity.this, "FB is Down lol Verification mail has'nt been sent!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegistrationActivity.this, "FB is Down lol Verification mail hasn't been sent!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -191,8 +202,13 @@ public class RegistrationActivity extends AppCompatActivity {
     private void sendUserData(){
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference myRef = firebaseDatabase.getReference(firebaseAuth.getUid());
-        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("Profile Pic");//User ID /Images/profile pic
-        UploadTask uploadTask = imageReference.putFile(imagePath);
+        StorageReference profileImageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("Profile Pic");//User ID /Images/profile pic
+
+        StorageReference imageReference = storageReference.child(firebaseAuth.getUid()).child("Images").child("QR Code Image");//User ID /Images/QR Code image
+
+
+
+        UploadTask uploadTask = profileImageReference.putFile(profileImagePath);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -206,7 +222,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
             }
         });
-        UserProfile userProfile = new UserProfile(age ,email, name);
+        UserProfile userProfile = new UserProfile(age ,email, name, phoneNumber);
         myRef.setValue(userProfile);
     }
+
+
 }

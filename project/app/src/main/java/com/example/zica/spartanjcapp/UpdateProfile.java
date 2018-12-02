@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class UpdateProfile extends AppCompatActivity {
 
-        private EditText newUserName, newUserEmail, newUserAge;
+        private EditText newUserName, newUserEmail, newUserAge, newUserPhone;
         private Button save;
         private FirebaseAuth firebaseAuth;
         private FirebaseDatabase firebaseDatabase;
@@ -69,6 +69,7 @@ public class UpdateProfile extends AppCompatActivity {
         newUserName = findViewById(R.id.etNameUpdate);
         newUserEmail = findViewById(R.id.etEmailUpdate);
         newUserAge = findViewById(R.id.etAgeUpdate);
+        newUserPhone = findViewById(R.id.etPhoneUpdate);
         save = findViewById(R.id.btnSave);
         updateProfilePic = findViewById(R.id.ivProfileUpdate);
 
@@ -86,11 +87,11 @@ public class UpdateProfile extends AppCompatActivity {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);// we are setting the defult text
+                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);// we are setting the default text
                 newUserName.setText( userProfile.getUserName());             // so they know what to edit
-                newUserEmail.setText( userProfile.getUserAge());
-                newUserAge.setText( userProfile.getUserEmail());
-
+                newUserEmail.setText( userProfile.getUserEmail());
+                newUserAge.setText( userProfile.getUserAge());
+                newUserPhone.setText(userProfile.getUserPhone());
             }
 
             @Override
@@ -116,8 +117,9 @@ public class UpdateProfile extends AppCompatActivity {
                 String name = newUserName.getText().toString();
                 String email = newUserEmail.getText().toString();
                 String age = newUserAge.getText().toString();
+                String phone = newUserPhone.getText().toString();
 
-                UserProfile userProfile = new UserProfile(name,email, age);
+                UserProfile userProfile = new UserProfile(name,email,age,phone);
                 databaseReference.setValue(userProfile);
 
                 ///////
