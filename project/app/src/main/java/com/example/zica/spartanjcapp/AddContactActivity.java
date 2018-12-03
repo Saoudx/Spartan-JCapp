@@ -1,5 +1,7 @@
 package com.example.zica.spartanjcapp;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,8 +9,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,12 +27,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.WRITE_CONTACTS;
 
+/**
+ * See this to see how permissions are handled. Still need to fix it though as it still does not work.
+ * https://inthecheesefactory.com/blog/things-you-need-to-know-about-android-m-permission-developer-edition/en
+ */
 public class AddContactActivity extends AppCompatActivity {
+    private final int REQUEST_READ_CONTACTS = 2;
+    private final int REQUEST_WRITE_CONTACTS = 3;
+    private final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
 
     private Button cancel, addContact;
     private FirebaseDatabase firebaseDatabase;
@@ -49,6 +61,8 @@ public class AddContactActivity extends AppCompatActivity {
 
         cancel = (Button)findViewById(R.id.btCancel);
         addContact = (Button)findViewById(R.id.btAddContact);
+
+
 
         // Value Event Listener for the scanned Users Id
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -75,69 +89,70 @@ public class AddContactActivity extends AppCompatActivity {
 
         // When the user clicks add contact, add the contact that they scanned to their phone.
         addContact.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
 
-                requestPermission();
-
-
-                addContactToPhone(scannedUser);
+                addContactToPhoneWrapper(scannedUser);
                 startActivity(new Intent(AddContactActivity.this, SecondActivity.class));
             }});
     }
 
 
-    private boolean checkPermission() {
-        return ( ContextCompat.checkSelfPermission(getApplicationContext(), READ_CONTACTS ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getApplicationContext(),WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED);
-    }
+    @TargetApi(Build.VERSION_CODES.M)
+    private void addContactToPhoneWrapper(UserProfile scannedUser) {
+        List<String> permissionsNeeded = new ArrayList<String>();
 
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{READ_CONTACTS}, 1 );
-        ActivityCompat.requestPermissions(this, new String[]{WRITE_CONTACTS}, 1 );
-    }
+        final List<String> permissionsList = new ArrayList<String>();
+        if (!addPermission(permissionsList, Manifest.permission.READ_CONTACTS))
+            permissionsNeeded.add("Read Contacts");
+        if (!addPermission(permissionsList, Manifest.permission.WRITE_CONTACTS))
+            permissionsNeeded.add("Write Contacts");
 
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0) {
-
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (cameraAccepted){
-                        Toast.makeText(getApplicationContext(), "Permission Granted, Now you can access contacts", Toast.LENGTH_LONG).show();
-                    }else {
-                        Toast.makeText(getApplicationContext(), "Permission Denied, You cannot access contacts", Toast.LENGTH_LONG).show();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if (shouldShowRequestPermissionRationale(READ_CONTACTS) || shouldShowRequestPermissionRationale(WRITE_CONTACTS)) {
-                                showMessageOKCancel("You need to allow access to both the permissions",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                    requestPermissions(new String[]{READ_CONTACTS},
-                                                            1);
-                                                    requestPermissions(new String[]{WRITE_CONTACTS},
-                                                            1);
-                                                }
-                                            }
-                                        });
-                                return;
+        if (permissionsList.size() > 0) {
+            if (permissionsNeeded.size() > 0) {
+                // Need Rationale
+                String message = "You need to grant access to " + permissionsNeeded.get(0);
+                for (int i = 1; i < permissionsNeeded.size(); i++)
+                    message = message + ", " + permissionsNeeded.get(i);
+                showMessageOKCancel(message,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                        REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
                             }
-                        }
-                    }
-                }
-                break;
+                        });
+                return;
+            }
+            requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
+            return;
         }
+
+        addContactToPhone(scannedUser);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private boolean addPermission(List<String> permissionsList, String permission) {
+        if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+            // Check for Rationale Option
+            if (!shouldShowRequestPermissionRationale(permission))
+                return false;
+        }
+        return true;
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new android.support.v7.app.AlertDialog.Builder(AddContactActivity.this)
+        new AlertDialog.Builder(AddContactActivity.this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
     }
+
 
     private void addContactToPhone(UserProfile user)
     {
